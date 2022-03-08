@@ -1,15 +1,19 @@
 ## Developing Vault Helper Tool as a Plugin
 --------------------------------------------
+### Takeaways
+
+The Vault plugin system solves the following use cases: allowing for customized authentication and customized secret engines. These do not have much overlap with our use case for the Vault Helper Tool. Thus there is no reason to implement the Vault Helper Tool as a plugin. Nonetheless, for future reference, some documentation about getting started with the Vault plugin system is provided below.
+
 ### Background on Vault Plugins
 Vault communicates to plugins over a RPC interface, so it is possible to build and distribute a plugin for Vault without having to rebuild Vault itself.
 
 Developing a plugin is simple. The only knowledge necessary to write a plugin is basic command-line skills and basic knowledge of the Go programming language.
 
-The plugin implementation needs to satisfy the interface for the plugin type. (Definitions in the docs for the backend running the plugin).
+The plugin implementation needs to satisfy the interface for the plugin type. (Definitions in the [docs for the backend running the plugin](https://www.vaultproject.io/docs/plugin)).
 
 Plugin backends are the components in Vault that can be implemented separately from Vault's builtin backends. These backends can be either authentication or secrets engines.
 
-The plus-side is that since it is a vault plug-in it will be easier for the user to navigate. 
+The plus-side is that since it is a vault plug-in it will be easier for the user to navigate (As one san simply enable/disable this in Vault in order to keep everything within Vault). 
 
 ### How it Works
 
@@ -24,7 +28,7 @@ Each plugin acts as a server, and Vault makes API calls to that server. This is 
 
 <li>Vault spawns the plugin, passing it a wrapped token containing TLS certificates and a private key. The wrapped token has exactly one use and a very small TTL.</li>
 
-<li>The plugin unwraps the provided wrapped token and makes an API call to Vault to unwrap the provided token. The plugin extracts the unique TLS certificates and private key wrapped by the token. The plugin uses these TLS certificates and private key to start an RPC server encrypted with TLS.</li>
+<li>The plugin unwraps the provided wrapped token by making an API call to Vault. The plugin extracts the unique TLS certificates and private key wrapped by the token. The plugin uses these TLS certificates and private key to start an RPC server encrypted with TLS.</li>
 
 <li>Vault and the plugin communicate via RPC over TLS using mutual TLS.</li>
 </ol>
@@ -64,8 +68,12 @@ func (b *backend) pathAuthLogin(_ context.Context, req *logical.Request, d *fram
   }, nil
 }
 ```
+This code snippet abve implements the login by username and password instead of tokens, and returns the data, policies and time of expiration for the tokes.
+
 Note that since the vault HTTP API is still used in the plug-in, the same calls can be implemented without issue. 
 Much of the keycloak portion cannot be abstracted, but the generation of the JWT might be possible. Moreover, since the plugin can be enabled/disabled in Vault, and the user doesn't have to move between Vault and the CLI.
+
+However, I'm not entirely sure how much of the [authorization procedure](https://candig.atlassian.net/wiki/spaces/CA/pages/623116353/WIP+Authorisation+-+Vault+helper+tool#Setup-Vault-for-the-task) can acutally be abstracted by implementing it as a Vault plugin as it is typically used to customize the authentication procedure and/or create a new secret engine.
 ### How to Get Started
 This is some boiler-plate code that is necessary to configure a binary to be a plugin, manage the TLS handshake and serve the proper plugin APIs:
 ```
@@ -125,5 +133,5 @@ func Backend(c *logical.BackendConfig) *backend {
 ```
 
  
-For futher information on how to implement this, see the following [document](https://github.com/hashicorp/vault-auth-plugin-example).
+For futher information on how to implement this, see the following [document for an example](https://github.com/hashicorp/vault-auth-plugin-example).
 Another example of how this is used is [Vault Auth Slack](https://github.com/sethvargo/vault-auth-slack).
