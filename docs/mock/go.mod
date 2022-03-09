@@ -1,4 +1,4 @@
-module github.gom/hashicorp/hello-vault-go/quick-start
+module mock
 
 go 1.16
 
