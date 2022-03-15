@@ -53,27 +53,30 @@ func readUserInfo(name string, fromCli bool) {
 		for _, v := range userArray.Users {
 			if v.Name == name {
 				inVault = true
-				fmt.Println(v)
+				fmt.Println(v.Metadata)
 			}
 		}
 		if !inVault {
 			fmt.Println("User not in Vault")
 		}
 	} else {
+		// this simply prints out sample user
 		secretData := map[string]interface{}{
 			"name": "user",
 			"metadata": map[string]interface{}{
 				"dataset123": 4,
 			},
 		}
-		fmt.Println(secretData)
+		fmt.Println(secretData["metadata"])
 	}
 }
 
+// Used to list users in Vault
 func listUserInfo(fromCli bool) {
 	if !fromCli {
 		fmt.Println(userArray.Users)
 	} else {
+		// this simply prints out sample user
 		secretData := map[string]interface{}{
 			"name": "user",
 			"metadata": map[string]interface{}{
@@ -84,6 +87,7 @@ func listUserInfo(fromCli bool) {
 	}
 }
 
+// Used to mimic Vault functionality
 func nextCommands() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
