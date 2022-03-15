@@ -11,10 +11,11 @@ import (
 )
 
 // NOTE: this will not be useful once backend is implemented.
+
+// userArray will store an array of all the users.
 var userArray Users
 
-// Users struct which contains
-// an array of users
+// Users struct which contains an array of users
 type Users struct {
 	Users []User
 }
@@ -25,7 +26,13 @@ type User struct {
 	Metadata map[string]interface{} `json:"metadata"`
 }
 
-// Used to write metadata to vault
+/* Used to write metadata to vault
+ The API call needed to implement write is:
+	_, err = client.Logical().Write("identity/entity", secretData)
+	if err != nil {
+		log.Fatalf("Unable to write secret: %v", err)
+	}
+*/
 func updateUserInfo(jsonName string) {
 	jsonFile, err := os.Open(jsonName + ".json")
 	if err != nil {
@@ -46,7 +53,13 @@ func updateUserInfo(jsonName string) {
 	jsonFile.Close()
 }
 
-// Used to read metadata from Vault
+/* Used to read metadata from Vault
+The API call needed to implement read is:
+	secret, err := client.Logical().Read("identity/entity/name/user")
+	if err != nil {
+		log.Fatalf("Unable to read secret: %v", err)
+	}
+*/
 func readUserInfo(name string, fromCli bool) {
 	if !fromCli {
 		inVault := false
@@ -71,7 +84,13 @@ func readUserInfo(name string, fromCli bool) {
 	}
 }
 
-// Used to list users in Vault
+/* Used to list users in Vault
+The API call needed to implement list is:
+	listSecret, err := client.Logical().List("identity/entity/name")
+	if err != nil {
+		log.Fatalf("Unable to list secret: %v", err)
+	}
+*/
 func listUserInfo(fromCli bool) {
 	if !fromCli {
 		fmt.Println(userArray.Users)
