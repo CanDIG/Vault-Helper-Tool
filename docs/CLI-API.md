@@ -53,6 +53,10 @@ What we need is the `token` field that contains the new JWT.
 Note that the input paramters might error if the name of the user is incorrect (not created) or not provided, if the metadata is not provided or if the role provided does not exist. 
 It might be a little difficult to evaulate whether the user/role is valid or not prior to calling the API.
 
+Note, the `role` should be created previously (as there is a [policy](https://www.vaultproject.io/docs/concepts/policies) attached to it that manages Vault permssions). You can view the creation of the `researcher` role in the [setup for the Vault Helper Tool](https://candig.atlassian.net/wiki/spaces/CA/pages/623116353/WIP+Authorisation+-+Vault+helper+tool#Setup-Vault-for-the-task).
+
+Each role can have multiple users, with differerent levels of access to different datasets. This information is stored in the metadata field.
+
 ### How to Read/`GET` a Role
 
 The only paramter required here is the role. The output should be a json detailing the role (bound_audiences, user_claim, role_type, policies, ttl). If no role is provided or the role doesn't exist there should be an error. 
@@ -63,6 +67,9 @@ secret, err := client.Logical().Read("identity/entity/name/user")
 		log.Fatalf("Unable to read secret: %v", err)
 	}
 ```
+
+In order to retrieve the user's metadata from Vault, we can obtain a user's permission token from the identity/entity endpoint. This token contains the permissions for the user (present in the metadata field). The metadata details the `dataset` that the user is permitted to access, and the `level` of said access. 
+
 ### How to `LIST` Tokens
 
 Note that we can simply use:
