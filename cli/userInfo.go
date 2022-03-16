@@ -67,7 +67,7 @@ func readUserInfo(token string, name string) {
 		fmt.Printf("Error: %s", err.Error())
 	}
 	fmt.Println(string(jsonStr))
-	fmt.Println("Secret read successfully.")
+	//	fmt.Println("Secret read successfully.")
 }
 
 // Used to list users in Vault
@@ -79,6 +79,9 @@ func listUserInfo(token string) {
 	}
 	datamap := listSecret.Data
 	data := datamap["keys"].([]interface{})
-	fmt.Println(data)
+	for _, n := range data {
+		nStr := fmt.Sprint(n)
+		readUserInfo(token, nStr)
+	}
 	fmt.Println("Secret list accessed successfully.")
 }
