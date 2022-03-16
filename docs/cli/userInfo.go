@@ -1,39 +1,31 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
+
+	"github.com/hashicorp/vault/api"
 )
 
-// NOTE: this will not be useful once backend is implemented.
+func Client(token string) (*api.Client, error) {
+	config := api.DefaultConfig()
 
-// userArray will store an array of all the users.
-var userArray Users
+	config.Address = "http://127.0.0.1:8200"
 
-// Users struct which contains an array of users
-type Users struct {
-	Users []User
-}
-
-// User struct which contains a name and metadata for this basic example
-type User struct {
-	Name     string                 `json:"name"`
-	Metadata map[string]interface{} `json:"metadata"`
-}
-
-/* Used to write metadata to vault
- The API call needed to implement write is:
-	_, err = client.Logical().Write("identity/entity", secretData)
+	client, err := api.NewClient(config)
 	if err != nil {
-		log.Fatalf("Unable to write secret: %v", err)
+		log.Fatalf("unable to initialize Vault client: %v", err)
 	}
-*/
-func updateUserInfo(jsonName string) {
+	client.SetToken(token)
+	return client, nil
+}
+
+// Used to write metadata to vault
+func updateUserInfo(token string, jsonName string) {
+	client, _ := Client(token)
 	jsonFile, err := os.Open(jsonName + ".json")
 	if err != nil {
 		fmt.Println("File provided does not exist: ", err)
@@ -44,87 +36,38 @@ func updateUserInfo(jsonName string) {
 		fmt.Println("Error parsing data: ", parseErr)
 	}
 
-	var value User
+	var value map[string]interface{}
 	marshErr := json.Unmarshal([]byte(byteValue), &value)
 	if marshErr != nil {
 		fmt.Println("Error using unmarshal: ", marshErr)
 	}
-	userArray.Users = append(userArray.Users, value)
+	_, err = client.Logical().Write("identity/entity", value)
+	if err != nil {
+		log.Fatalf("Unable to write secret: %v", err)
+	}
+	fmt.Println("Secret written successfully.")
 	jsonFile.Close()
 }
 
-/* Used to read metadata from Vault
-The API call needed to implement read is:
-	secret, err := client.Logical().Read("identity/entity/name/user")
+// Used to read metadata from Vault
+func readUserInfo(token string, name string) {
+	client, _ := Client(token)
+	endpoint := "identity/entity/name/" + name
+	secret, err := client.Logical().Read(endpoint)
 	if err != nil {
 		log.Fatalf("Unable to read secret: %v", err)
 	}
-*/
-func readUserInfo(name string, fromCli bool) {
-	if !fromCli {
-		inVault := false
-		for _, v := range userArray.Users {
-			if v.Name == name {
-				inVault = true
-				fmt.Println(v.Metadata)
-			}
-		}
-		if !inVault {
-			fmt.Println("User not in Vault")
-		}
-	} else {
-		// this simply prints out sample user
-		secretData := map[string]interface{}{
-			"name": "user",
-			"metadata": map[string]interface{}{
-				"dataset123": 4,
-			},
-		}
-		fmt.Println(secretData["metadata"])
-	}
+	fmt.Println(secret)
+	fmt.Println("Secret read successfully.")
 }
 
-/* Used to list users in Vault
-The API call needed to implement list is:
+// Used to list users in Vault
+func listUserInfo(token string) {
+	client, _ := Client(token)
 	listSecret, err := client.Logical().List("identity/entity/name")
 	if err != nil {
 		log.Fatalf("Unable to list secret: %v", err)
 	}
-*/
-func listUserInfo(fromCli bool) {
-	if !fromCli {
-		fmt.Println(userArray.Users)
-	} else {
-		// this simply prints out sample user
-		secretData := map[string]interface{}{
-			"name": "user",
-			"metadata": map[string]interface{}{
-				"dataset123": 4,
-			},
-		}
-		fmt.Println(secretData)
-	}
-}
-
-// Used to mimic Vault functionality
-func nextCommands() {
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		result := scanner.Text()
-		newRes := strings.Split(result, " ")
-		command := newRes[0]
-		if command == "write" {
-			updateUserInfo(newRes[1])
-		} else if command == "read" {
-			readUserInfo(newRes[1], false)
-		} else if command == "list" {
-			listUserInfo(false)
-		} else if command == "exit" || command == "q" {
-			break
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Println(err)
-	}
+	fmt.Println(listSecret)
+	fmt.Println("Secret list accessed successfully.")
 }
