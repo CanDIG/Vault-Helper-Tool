@@ -70,7 +70,7 @@ func readUserInfo(token string, name string) {
 	//	fmt.Println("Secret read successfully.")
 }
 
-// Used to list users in Vault
+// Used to list users + metadata in Vault
 func listUserInfo(token string) {
 	client, _ := Client(token)
 	listSecret, err := client.Logical().List("identity/entity/name")
@@ -81,7 +81,9 @@ func listUserInfo(token string) {
 	data := datamap["keys"].([]interface{})
 	for _, n := range data {
 		nStr := fmt.Sprint(n)
+		fmt.Println(n)
 		readUserInfo(token, nStr)
+		fmt.Println("-------------------------") // just for legibility purposes
 	}
-	fmt.Println("Secret list accessed successfully.")
+	//fmt.Println("Secret list accessed successfully.")
 }
