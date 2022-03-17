@@ -36,8 +36,7 @@ list {insert-token-here}
 </ul>
 
 There are two ways to access the CLI:
-<ul>
-<li>By running it in interactive mode (note the aliases can be used instead of the full command), for example: 
+- By running it in interactive mode (note the aliases can be used instead of the full command), for example: 
 ```
 $ ./cli
 # Enter command or enter q to quit: write {insert-token-here} example.json
@@ -48,8 +47,8 @@ $ ./cli
 # Enter command or enter q to quit: l {insert-token-here}
 # Enter command or enter q to quit: q
 ```
-</li>
-<li>By running it via the command line (note the aliases can be used instead of the full command), for example:
+
+- By running it via the command line (note the aliases can be used instead of the full command), for example:
 ```
 $ ./cli write {insert-token-here} example.json
 $ ./cli read {insert-token-here} user
@@ -59,8 +58,6 @@ $ ./cli r {insert-token-here} user
 $ ./cli l {insert-token-here}
 $ ./cli help
 ```
-</li>
-</ul>
 
 
 ## How to Generate a JWT After Writing
