@@ -1,7 +1,7 @@
 {
-    "name": "user",
+    "name": "user2",
     "metadata": {
-        "dataset123": 4,
-        "dataset321": 3
+        "dataset123": 2,
+        "dataset321": 2
     }
 }

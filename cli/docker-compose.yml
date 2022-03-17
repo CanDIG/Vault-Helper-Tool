@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   vault:
     image: vault
@@ -12,4 +12,13 @@ services:
       - ./volumes/config:/vault/config
     cap_add:
       - IPC_LOCK
-    entrypoint: vault server -config=/vault/config/vault.json
+    entrypoint: vault server -config=config.hcl
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:16.1.1
+    ports: 
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+

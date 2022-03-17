@@ -62,7 +62,8 @@ $ ./cli help
 
 ## How to Generate a JWT After Writing
 
-Follow the process outlined in the [Setup document](https://candig.atlassian.net/wiki/spaces/CA/pages/623116353/Authorisation+-+Vault+helper+tool) to initialize a user. Then, once you can sucessfully generate the sample JWT provided, complete the following steps to write to Vault and generate the JWT:
+Follow the process outlined in the [Setup document](https://candig.atlassian.net/wiki/spaces/CA/pages/623116353/Authorisation+-+Vault+helper+tool) to initialize a user. Note, in order to run Vault in deployment, DO NOT use dev mode. Use the [Authorization document](https://learn.hashicorp.com/tutorials/vault/getting-started-authentication#token-authentication) provided by Vault. A root token should be provided to the user with the unseal key. This is the token you should use when running commands. 
+Following this proceess, once you can sucessfully generate the sample JWT provided, complete the following steps to write to Vault and generate the JWT:
 
 In the cli directory:
 ```
