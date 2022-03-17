@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"sort"
@@ -13,35 +12,27 @@ func main() {
 
 	app := &cli.App{
 		Name:  "Vault Helper Tool CLI",
-		Usage: "Lets user read, update and list user information.",
+		Usage: "Lets user read, update and list user information. If entering interactive mode, enter q to quit",
 		Commands: []*cli.Command{
 			{
 				Name:    "write",
-				Aliases: []string{"w"},
-				Usage:   "update user information by overwriting (provide 1 argument - name of json file)",
+				Aliases: []string{"w"},s
+				Usage:   "update user information by overwriting (provide 2 arguments - token, json file)",
 				Action: func(c *cli.Context) error {
-					arg0 := c.Args().Get(0)
-					arg1 := c.Args().Get(1)
-					if arg0 != "" && arg1 != "" {
-						updateUserInfo(arg0, arg1)
-					} else {
-						fmt.Println("Missing json file name")
-					}
+					cArg0 := c.Args().Get(0)
+					cArg1 := c.Args().Get(1)
+					callUpdate(cArg0, cArg1)
 					return nil
 				},
 			},
 			{
 				Name:    "read",
 				Aliases: []string{"r"},
-				Usage:   "read information for user (provide 1 argument - name of user to update)",
+				Usage:   "read metadata for user (provide 2 arguments - token, name of user)",
 				Action: func(c *cli.Context) error {
-					arg0 := c.Args().Get(0)
-					arg1 := c.Args().Get(1)
-					if arg0 != "" && arg1 != "" {
-						readUserInfo(arg0, arg1)
-					} else {
-						fmt.Println("Missing name of user")
-					}
+					cArg0 := c.Args().Get(0)
+					cArg1 := c.Args().Get(1)
+					callRead(cArg0, cArg1)
 					return nil
 				},
 			},
@@ -50,10 +41,8 @@ func main() {
 				Aliases: []string{"l"},
 				Usage:   "list all users and their data (no arguments needed)",
 				Action: func(c *cli.Context) error {
-					arg0 := c.Args().Get(0)
-					if arg0 != "" {
-						listUserInfo(arg0)
-					}
+					cArg0 := c.Args().Get(0)
+					callList(cArg0)
 					return nil
 				},
 			},
@@ -65,5 +54,8 @@ func main() {
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if len(os.Args) == 1 {
+		readInput()
 	}
 }

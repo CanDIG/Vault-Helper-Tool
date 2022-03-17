@@ -26,27 +26,33 @@ func Client(token string) (*api.Client, error) {
 
 // Used to write metadata to vault
 func updateUserInfo(token string, jsonName string) {
+	errOpening := false
 	client, _ := Client(token)
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
-		fmt.Println("File provided does not exist: ", err)
+		errOpening = true
+		log.Println("File provided does not exist: ", err)
 	}
 
 	byteValue, parseErr := ioutil.ReadAll(jsonFile)
 	if parseErr != nil {
-		fmt.Println("Error parsing data: ", parseErr)
+		errOpening = true
+		log.Println("Error parsing data: ", parseErr)
 	}
 
 	var value map[string]interface{}
 	marshErr := json.Unmarshal([]byte(byteValue), &value)
 	if marshErr != nil {
-		fmt.Println("Error using unmarshal: ", marshErr)
+		errOpening = true
+		log.Println("Error using unmarshal: ", marshErr)
 	}
-	_, err = client.Logical().Write("identity/entity", value)
-	if err != nil {
-		log.Fatalf("Unable to write secret: %v", err)
+	if !errOpening {
+		_, err = client.Logical().Write("identity/entity", value)
+		if err != nil {
+			log.Fatalf("Unable to write secret: %v", err)
+		}
+		fmt.Println("Secret written successfully.")
 	}
-	fmt.Println("Secret written successfully.")
 	jsonFile.Close()
 }
 
@@ -58,16 +64,20 @@ func readUserInfo(token string, name string) {
 	if err != nil {
 		log.Fatalf("Unable to read secret: %v", err)
 	}
-	data, ok := secret.Data["metadata"].(map[string]interface{})
-	if !ok {
-		log.Fatalf("Data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
+	if secret != nil {
+		data, ok := secret.Data["metadata"].(map[string]interface{})
+		if !ok {
+			log.Fatalf("Data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
+		}
+		jsonStr, err := json.Marshal(data)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		}
+		fmt.Println(string(jsonStr))
+	} else {
+		fmt.Println("User does not exist in Vault.")
 	}
-	jsonStr, err := json.Marshal(data)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	}
-	fmt.Println(string(jsonStr))
-	//	fmt.Println("Secret read successfully.")
+	//
 }
 
 // Used to list users + metadata in Vault
