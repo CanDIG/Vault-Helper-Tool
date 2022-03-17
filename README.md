@@ -12,28 +12,28 @@ In order to get started, run `go build` in the cli folder to build the CLI.
 Run the script `./cli` to set up a Vault dev server and run the code.
 
 Note, there are 3 commands implemented:
-<ul>
-<li>`write`: Can use this command as 
+- `write`: Can use this command as 
 ```
 ./cli write {insert-token-here} {json file}
 ```
 or after running the cli as 
 ```
 write {insert-token-here} {json file}
-```</li>
-<li>`read`: Can use this command as 
+```
+- `read`: Can use this command as 
 ```
 ./cli read {insert-token-here} {user's name}
-``` or after running the cli as `read {insert-token-here} {user's name}`, the json file should be provided to it be changed to add more users.</li>
-<li>`list`: Can use this command as 
+```
+or after running the cli as `read {insert-token-here} {user's name}`, the json file should be provided to it be changed to add more users.
+- `list`: Can use this command as 
 ```
 ./cli list {insert-token-here} {insert-token-here}
-``` or after running the cli as 
+``` 
+or after running the cli as 
 ```
 list {insert-token-here}
-```.</li>
-<li>`help`: Can use this command as `./cli` or `./cli -h` or `./cli help`. This command will show information about the CLI.</li>
-</ul>
+```
+- `help`: Can use this command as `./cli` or `./cli -h` or `./cli help`. This command will show information about the CLI.
 
 There are two ways to access the CLI:
 - By running it in interactive mode (note the aliases can be used instead of the full command), for example: 
