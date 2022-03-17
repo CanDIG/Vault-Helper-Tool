@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-// This document allows for increased functionaly of the Vault helper tool
+// This function allows for increased functionality of the Vault helper tool
+// Reads one line of user input at a time
 func readInput() {
 	fmt.Print("# Enter command or press q to quit: ")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -16,11 +17,11 @@ func readInput() {
 		result := scanner.Text()
 		newRes := strings.Split(result, " ")
 		command := newRes[0]
-		if command == "write" && len(newRes) >= 3 {
+		if (command == "write" || command == "w") && len(newRes) >= 3 {
 			callUpdate(newRes[1], newRes[2])
-		} else if command == "read" && len(newRes) >= 3 {
+		} else if (command == "read" || command == "r") && len(newRes) >= 3 {
 			callRead(newRes[1], newRes[2])
-		} else if command == "list" && len(newRes) >= 2 {
+		} else if (command == "list" || command == "l") && len(newRes) >= 2 {
 			callList(newRes[1])
 		} else if command == "exit" || command == "q" {
 			break

@@ -12,11 +12,11 @@ func main() {
 
 	app := &cli.App{
 		Name:  "Vault Helper Tool CLI",
-		Usage: "Lets user read, update and list user information. If entering interactive mode, enter q to quit",
+		Usage: "Lets user read, update and list user information. If entering interactive mode, enter q or to quit",
 		Commands: []*cli.Command{
 			{
 				Name:    "write",
-				Aliases: []string{"w"},s
+				Aliases: []string{"w"},
 				Usage:   "update user information by overwriting (provide 2 arguments - token, json file)",
 				Action: func(c *cli.Context) error {
 					cArg0 := c.Args().Get(0)

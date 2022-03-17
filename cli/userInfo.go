@@ -77,7 +77,6 @@ func readUserInfo(token string, name string) {
 	} else {
 		fmt.Println("User does not exist in Vault.")
 	}
-	//
 }
 
 // Used to list users + metadata in Vault
@@ -95,5 +94,4 @@ func listUserInfo(token string) {
 		readUserInfo(token, nStr)
 		fmt.Println("-------------------------") // just for legibility purposes
 	}
-	//fmt.Println("Secret list accessed successfully.")
 }
