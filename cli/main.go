@@ -7,6 +7,9 @@ import (
 
 	cs "cli/configSettings"
 
+	h "cli/handlers"
+	v "cli/validators"
+
 	"github.com/urfave/cli/v2"
 )
 
@@ -22,9 +25,9 @@ func main() {
 				Usage:   "update user information by overwriting (provide 1 argument - json file)",
 				Action: func(c *cli.Context) error {
 					cArg0 := c.Args().Get(0)
-					rightInput := validateWrite(cs.TOKEN, cArg0)
+					rightInput := v.ValidateWrite(cs.TOKEN, cArg0)
 					if rightInput {
-						writeUserInfo(cs.TOKEN, cArg0)
+						h.WriteUserInfo(cs.TOKEN, cArg0)
 					}
 					return nil
 				},
@@ -35,9 +38,9 @@ func main() {
 				Usage:   "read metadata for user (provide 1 argument - name of user)",
 				Action: func(c *cli.Context) error {
 					cArg0 := c.Args().Get(0)
-					rightInput := validateRead(cs.TOKEN, cArg0)
+					rightInput := v.ValidateRead(cs.TOKEN, cArg0)
 					if rightInput {
-						readUserInfo(cs.TOKEN, cArg0)
+						h.ReadUserInfo(cs.TOKEN, cArg0)
 					}
 					return nil
 				},
@@ -47,9 +50,9 @@ func main() {
 				Aliases: []string{"l"},
 				Usage:   "list all users and their data (no arguments needed)",
 				Action: func(c *cli.Context) error {
-					rightInput := validateList(cs.TOKEN)
+					rightInput := v.ValidateList(cs.TOKEN)
 					if rightInput {
-						listUserInfo(cs.TOKEN)
+						h.ListUserInfo(cs.TOKEN)
 					}
 					return nil
 				},

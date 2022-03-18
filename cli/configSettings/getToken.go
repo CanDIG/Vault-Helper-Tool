@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 )
 
-func getToken() string {
-	absPath, _ := filepath.Abs("../cli/configSettings/file.txt")
+func GetToken() string {
+	absPath, _ := filepath.Abs("../cli/configSettings/token.txt")
 	token, err := ioutil.ReadFile(absPath) // just pass the file name
 	if err != nil {
 		fmt.Print(err)

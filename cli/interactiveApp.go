@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	cs "cli/configSettings"
+	h "cli/handlers"
+	v "cli/validators"
 	"fmt"
 	"log"
 	"os"
@@ -20,19 +22,19 @@ func interactiveApp() {
 		newRes := strings.Split(result, " ")
 		command := newRes[0]
 		if (command == "write" || command == "w") && len(newRes) >= 2 {
-			rightInput := validateWrite(cs.TOKEN, newRes[1])
+			rightInput := v.ValidateWrite(cs.TOKEN, newRes[1])
 			if rightInput {
-				writeUserInfo(cs.TOKEN, newRes[1])
+				h.WriteUserInfo(cs.TOKEN, newRes[1])
 			}
 		} else if (command == "read" || command == "r") && len(newRes) >= 2 {
-			rightInput := validateRead(cs.TOKEN, newRes[1])
+			rightInput := v.ValidateRead(cs.TOKEN, newRes[1])
 			if rightInput {
-				readUserInfo(cs.TOKEN, newRes[1])
+				h.ReadUserInfo(cs.TOKEN, newRes[1])
 			}
 		} else if (command == "list" || command == "l") && len(newRes) >= 1 {
-			rightInput := validateList(cs.TOKEN)
+			rightInput := v.ValidateList(cs.TOKEN)
 			if rightInput {
-				listUserInfo(cs.TOKEN)
+				h.ListUserInfo(cs.TOKEN)
 			}
 		} else if command == "exit" || command == "q" {
 			break

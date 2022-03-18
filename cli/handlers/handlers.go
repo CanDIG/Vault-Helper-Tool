@@ -1,6 +1,7 @@
-package main
+package handlers
 
 import (
+	cs "cli/configSettings"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,9 +10,9 @@ import (
 )
 
 // Used to write metadata to vault
-func writeUserInfo(token string, jsonName string) {
+func WriteUserInfo(token string, jsonName string) {
 	errOpening := false
-	client, _ := Client(token)
+	client, _ := cs.Client(token)
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
 		errOpening = true
@@ -41,8 +42,8 @@ func writeUserInfo(token string, jsonName string) {
 }
 
 // Used to read metadata from Vault
-func readUserInfo(token string, name string) {
-	client, _ := Client(token)
+func ReadUserInfo(token string, name string) {
+	client, _ := cs.Client(token)
 	endpoint := "identity/entity/name/" + name
 	secret, err := client.Logical().Read(endpoint)
 	if err != nil {
@@ -65,8 +66,8 @@ func readUserInfo(token string, name string) {
 }
 
 // Used to list users + metadata in Vault
-func listUserInfo(token string) {
-	client, _ := Client(token)
+func ListUserInfo(token string) {
+	client, _ := cs.Client(token)
 	listSecret, err := client.Logical().List("identity/entity/name")
 	if err != nil {
 		log.Fatalf("Unable to list secret: %v", err)
@@ -76,7 +77,7 @@ func listUserInfo(token string) {
 	for _, n := range data {
 		nStr := fmt.Sprint(n)
 		fmt.Println(n)
-		readUserInfo(token, nStr)
+		ReadUserInfo(token, nStr)
 		fmt.Println("-------------------------") // just for legibility purposes
 	}
 }

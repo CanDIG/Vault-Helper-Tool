@@ -1,11 +1,11 @@
-package main
+package validators
 
 import (
 	"fmt"
 )
 
 // Basic error handling for number of arguments (update call)
-func validateWrite(token string, arg1 string) bool {
+func ValidateWrite(token string, arg1 string) bool {
 	if token != "" && arg1 != "" && len(arg1) > 5 && arg1[len(arg1)-5:] == ".json" {
 		return true
 	} else if token == "" && arg1 == "" {
@@ -23,7 +23,7 @@ func validateWrite(token string, arg1 string) bool {
 }
 
 // Basic error handling for number of arguments (read call)
-func validateRead(token string, arg1 string) bool {
+func ValidateRead(token string, arg1 string) bool {
 	if token != "" && arg1 != "" {
 		return true
 	} else if token == "" && arg1 == "" {
@@ -36,7 +36,7 @@ func validateRead(token string, arg1 string) bool {
 }
 
 // Basic error handling for number of arguments (list call)
-func validateList(token string) bool {
+func ValidateList(token string) bool {
 	if token != "" {
 		return true
 	} else {
