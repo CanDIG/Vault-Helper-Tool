@@ -5,7 +5,8 @@ This tool allows users to perform CRUD operations using the command-line in Linu
 # Quick Start
 
 This is a quick mock of how the Vault helper tool will work.
-In order to get started, run `go build` in the cli folder to build the CLI.
+In order to get started, follow the steps outlined in the [Deployment document](https://learn.hashicorp.com/tutorials/vault/getting-started-deploy) provided by Vault. A root token should be provided to the user with the unseal key after running `vault operator unseal`. This token should be added to `secretFile.txt`. 
+Then, run `go build` in the cli folder to build the CLI.
 
 ## How To Use the CLI
 
@@ -14,24 +15,27 @@ Run the script `./cli` to set up a Vault dev server and run the code.
 Note, there are 3 commands implemented:
 - `write`: Can use this command as 
 ```
-./cli write {insert-token-here} {json file}
+./cli write {json file}
 ```
 or after running the cli as 
 ```
-write {insert-token-here} {json file}
+write {json file}
 ```
 - `read`: Can use this command as 
 ```
-./cli read {insert-token-here} {user's name}
+./cli read {user's name}
 ```
-or after running the cli as `read {insert-token-here} {user's name}`, the json file should be provided to it be changed to add more users.
+or after running the cli as 
+```
+read {user's name}`
+```
 - `list`: Can use this command as 
 ```
-./cli list {insert-token-here} {insert-token-here}
+./cli list
 ``` 
 or after running the cli as 
 ```
-list {insert-token-here}
+list 
 ```
 - `help`: Can use this command as `./cli` or `./cli -h` or `./cli help`. This command will show information about the CLI.
 
@@ -39,35 +43,35 @@ There are two ways to access the CLI:
 - By running it in interactive mode (note the aliases can be used instead of the full command), for example: 
 ```
 $ ./cli
-# Enter command or enter q to quit: write {insert-token-here} example.json
-# Enter command or enter q to quit: read {insert-token-here} user
-# Enter command or enter q to quit: list {insert-token-here}
-# Enter command or enter q to quit: w {insert-token-here} example.json
-# Enter command or enter q to quit: r {insert-token-here} user
-# Enter command or enter q to quit: l {insert-token-here}
+# Enter command or enter q to quit: write example.json
+# Enter command or enter q to quit: read user
+# Enter command or enter q to quit: list
+# Enter command or enter q to quit: w example.json
+# Enter command or enter q to quit: r user
+# Enter command or enter q to quit: l
 # Enter command or enter q to quit: q
 ```
 
 - By running it via the command line (note the aliases can be used instead of the full command), for example:
 ```
-$ ./cli write {insert-token-here} example.json
-$ ./cli read {insert-token-here} user
-$ ./cli list {insert-token-here}
-$ ./cli w {insert-token-here} example.json
-$ ./cli r {insert-token-here} user
-$ ./cli l {insert-token-here}
+$ ./cli write example.json
+$ ./cli read user
+$ ./cli list
+$ ./cli w example.json
+$ ./cli r user
+$ ./cli l
 $ ./cli help
 ```
 
 
 ## How to Generate a JWT After Writing
 
-Follow the process outlined in the [Setup document](https://candig.atlassian.net/wiki/spaces/CA/pages/623116353/Authorisation+-+Vault+helper+tool) to initialize a user. Note, in order to run Vault in deployment, DO NOT use dev mode. Use the [Authorization document](https://learn.hashicorp.com/tutorials/vault/getting-started-authentication#token-authentication) provided by Vault. A root token should be provided to the user with the unseal key. This is the token you should use when running commands. 
+Follow the process outlined in the [Setup document](https://candig.atlassian.net/wiki/spaces/CA/pages/623116353/Authorisation+-+Vault+helper+tool) to initialize a user (the root token should be added to `secretFile.txt`). Note, in order to run Vault in deployment, DO NOT use dev mode. Use the [Deployment document](https://learn.hashicorp.com/tutorials/vault/getting-started-deploy) provided by Vault instead. A root token should be provided to the user with the unseal key after running `vault operator unseal`. This token should be added to `secretFile.txt`. 
 Following this proceess, once you can sucessfully generate the sample JWT provided, complete the following steps to write to Vault and generate the JWT:
 
 In the cli directory:
 ```
-./cli write {insert-token-here} example.json
+./cli write example.json
 ```
 Then, curl Keycloak:
 ```
