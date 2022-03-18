@@ -3,14 +3,16 @@ package main
 import (
 	"log"
 
+	cs "cli/configSettings"
+
 	"github.com/hashicorp/vault/api"
 )
 
 // Connects to Vault server
 func Client(token string) (*api.Client, error) {
-	config := DEFAULT_CONFIG
+	config := cs.DEFAULT_CONFIG
 
-	config.Address = VAULT_ADDRESS
+	config.Address = cs.VAULT_ADDRESS
 
 	client, err := api.NewClient(config)
 	if err != nil {
