@@ -62,7 +62,16 @@ $ ./cli r user
 $ ./cli l
 $ ./cli help
 ```
+## Verify that Data in Vault
 
+Use the following vault commmand to list out the users in vault:
+```
+$ vault list identity/entity/name
+```
+And the following command to read all the information associated with a particual user:
+```
+$ vault read identity/entity/name/{user-name}
+```
 
 ## How to Generate a JWT After Writing
 
