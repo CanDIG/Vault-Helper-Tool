@@ -57,6 +57,19 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "delete",
+				Aliases: []string{"d"},
+				Usage:   "delete user from vault (provide 1 argument - name of user)",
+				Action: func(c *cli.Context) error {
+					cArg0 := c.Args().Get(0)
+					rightInput := v.ValidateDelete(cs.TOKEN, cArg0)
+					if rightInput {
+						h.DeleteUserInfo(cs.TOKEN, cArg0)
+					}
+					return nil
+				},
+			},
 		},
 	}
 

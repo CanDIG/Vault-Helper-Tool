@@ -44,3 +44,16 @@ func ValidateList(token string) bool {
 		return false
 	}
 }
+
+// Basic error handling for number of arguments (delelte call)
+func ValidateDelete(token string, arg1 string) bool {
+	if token != "" && arg1 != "" {
+		return true
+	} else if token == "" && arg1 == "" {
+		fmt.Println("No arguments provided, missing token and user's name")
+		return false
+	} else {
+		fmt.Println("Only one argument provided")
+		return false
+	}
+}

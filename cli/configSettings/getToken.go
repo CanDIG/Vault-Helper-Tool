@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 )
 
 func GetToken() string {
@@ -14,6 +15,8 @@ func GetToken() string {
 	}
 
 	tokenStr := string(token)
+	finalToken := strings.TrimSuffix(tokenStr, "\n")
 
-	return tokenStr
+	return finalToken
+
 }
