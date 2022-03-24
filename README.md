@@ -4,8 +4,6 @@ This tool allows users to perform CRUD operations using the command-line in Linu
 
 # Quick Start
 
-
-This is a quick mock of how the Vault helper tool will work.
 In order to get started, follow the steps outlined in the [Deployment document](https://learn.hashicorp.com/tutorials/vault/getting-started-deploy) provided by Vault. A root token should be provided to the user with the unseal key after running `vault operator unseal`. This token should be added to `secretFile.txt`. **NOTE: Make sure you do NOT have a trailing newline/space/words after the token**.
 Then, run `go build` in the cli folder to build the CLI.
 
