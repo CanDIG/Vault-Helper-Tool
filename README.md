@@ -29,7 +29,7 @@ write {json file}
 ```
 or after running the cli as 
 ```
-read {user's name}`
+read {user's name}
 ```
 - `list`: Can use this command as 
 ```
@@ -41,6 +41,15 @@ list
 ```
 - `help`: Can use this command as `./cli` or `./cli -h` or `./cli help`. This command will show information about the CLI.
 
+- `delete`: Can use the command as
+```
+./cli delete {user's name}
+```
+or after running the cli as
+```
+delete {user's name}
+```
+
 There are two ways to access the CLI:
 - By running it in interactive mode (note the aliases can be used instead of the full command), for example: 
 ```
@@ -48,9 +57,11 @@ $ ./cli
 # Enter command or enter q to quit: write example.json
 # Enter command or enter q to quit: read user
 # Enter command or enter q to quit: list
+# Enter command or enter q to quit: delete user
 # Enter command or enter q to quit: w example.json
 # Enter command or enter q to quit: r user
 # Enter command or enter q to quit: l
+# Enter command or enter q to quit: d user
 # Enter command or enter q to quit: q
 ```
 
@@ -59,9 +70,11 @@ $ ./cli
 $ ./cli write example.json
 $ ./cli read user
 $ ./cli list
+$ ./cli read user
 $ ./cli w example.json
 $ ./cli r user
 $ ./cli l
+$ ./cli d user
 $ ./cli help
 ```
 ## Verify that Data in Vault

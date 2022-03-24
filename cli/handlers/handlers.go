@@ -72,12 +72,30 @@ func ListUserInfo(token string) {
 	if err != nil {
 		log.Fatalf("Unable to list secret: %v", err)
 	}
-	datamap := listSecret.Data
-	data := datamap["keys"].([]interface{})
-	for _, n := range data {
-		nStr := fmt.Sprint(n)
-		fmt.Println(n)
-		ReadUserInfo(token, nStr)
-		fmt.Println("-------------------------") // just for legibility purposes
+	if listSecret != nil {
+		datamap := listSecret.Data
+		data := datamap["keys"].([]interface{})
+		for _, n := range data {
+			nStr := fmt.Sprint(n)
+			fmt.Println(n)
+			ReadUserInfo(token, nStr)
+			fmt.Println("-------------------------") // just for legibility purposes
+		}
+	}
+}
+
+// Used to read metadata from Vault
+func DeleteUserInfo(token string, name string) {
+	client, _ := cs.Client(token)
+	endpoint := "identity/entity/name/" + name
+	secret, err := client.Logical().Delete(endpoint)
+	if err != nil {
+		log.Fatalf("Unable to delete secret: %v", err)
+	}
+	if secret == nil {
+		fmt.Println("User sucessfully deleted from Vault.")
+	} else {
+		errMsg := name + " does not exist in Vault."
+		fmt.Println(errMsg)
 	}
 }

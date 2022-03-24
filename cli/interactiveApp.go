@@ -36,6 +36,11 @@ func interactiveApp() {
 			if rightInput {
 				h.ListUserInfo(cs.TOKEN)
 			}
+		} else if (command == "delete" || command == "d") && len(newRes) >= 2 {
+			rightInput := v.ValidateDelete(cs.TOKEN, newRes[1])
+			if rightInput {
+				h.DeleteUserInfo(cs.TOKEN, newRes[1])
+			}
 		} else if command == "exit" || command == "q" {
 			break
 		} else {
