@@ -4,30 +4,44 @@ import (
 	"log"
 	"os"
 	"sort"
+  
+	cs "cli/configSettings"
 
+	h "cli/handlers"
+	v "cli/validators"
+  
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
+
 	app := &cli.App{
 		Name:  "Vault Helper Tool CLI",
-		Usage: "Lets user read, update and list user information.",
+		Usage: "Lets user read, update and list user information. Modify the secretFile.txt with the token necessary. If entering interactive mode, enter q or to quit",
 		Commands: []*cli.Command{
 			{
 				Name:    "write",
 				Aliases: []string{"w"},
-				Usage:   "update user information by overwriting (provide 1 argument - name of json file)",
+				Usage:   "update user information by overwriting (provide 1 argument - json file)",
 				Action: func(c *cli.Context) error {
-					updateUserInfo(c.Args().Get(0))
+					cArg0 := c.Args().Get(0)
+					rightInput := v.ValidateWrite(cs.TOKEN, cArg0)
+					if rightInput {
+						h.WriteUserInfo(cs.TOKEN, cArg0)
+					}
 					return nil
 				},
 			},
 			{
 				Name:    "read",
 				Aliases: []string{"r"},
-				Usage:   "read information for user (provide 1 argument - name of user to update)",
+				Usage:   "read metadata for user (provide 1 argument - name of user)",
 				Action: func(c *cli.Context) error {
-					readUserInfo(c.Args().Get(0), true)
+					cArg0 := c.Args().Get(0)
+					rightInput := v.ValidateRead(cs.TOKEN, cArg0)
+					if rightInput {
+						h.ReadUserInfo(cs.TOKEN, cArg0)
+					}
 					return nil
 				},
 			},
@@ -36,7 +50,23 @@ func main() {
 				Aliases: []string{"l"},
 				Usage:   "list all users and their data (no arguments needed)",
 				Action: func(c *cli.Context) error {
-					listUserInfo(true)
+					rightInput := v.ValidateList(cs.TOKEN)
+					if rightInput {
+						h.ListUserInfo(cs.TOKEN)
+					}
+					return nil
+				},
+			},
+			{
+				Name:    "delete",
+				Aliases: []string{"d"},
+				Usage:   "delete user from vault (provide 1 argument - name of user)",
+				Action: func(c *cli.Context) error {
+					cArg0 := c.Args().Get(0)
+					rightInput := v.ValidateDelete(cs.TOKEN, cArg0)
+					if rightInput {
+						h.DeleteUserInfo(cs.TOKEN, cArg0)
+					}
 					return nil
 				},
 			},
@@ -49,5 +79,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	readInput()
+	// used to run interactive mode, call ./cli to run this
+	if len(os.Args) == 1 {
+		interactiveApp()
+	}
 }
