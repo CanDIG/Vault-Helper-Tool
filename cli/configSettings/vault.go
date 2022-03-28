@@ -1,21 +1,26 @@
 package configSettings
 
 import (
-	"log"
-
 	"github.com/hashicorp/vault/api"
 )
 
 // Connects to Vault server
-func Client(token string) (*api.Client, error) {
+func Client() (*api.Client, error) {
 	config := DEFAULT_CONFIG
 
 	config.Address = VAULT_ADDRESS
 
 	client, err := api.NewClient(config)
 	if err != nil {
-		log.Fatalf("unable to initialize Vault client: %v", err)
+		return nil, err
 	}
-	client.SetToken(token)
+	errToken := ValidateToken()
+	if errToken != nil {
+		return nil, errToken
+	}
+	client.SetToken(GetToken())
 	return client, nil
 }
+
+// TODO verify if intialization here is good style
+var VaultClient, Err = Client()

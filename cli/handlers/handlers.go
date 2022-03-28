@@ -5,97 +5,94 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
+// TODO rewrite all error to resemble (DONE)
+/* 	jsonFile, err := os.Open(jsonName)
+if err != nil {
+	return fmt.Errorf("Could not open file. %w", err)
+}
+*/
+
+// TODO make sure that none of the handlers print output directly;
+// The only code doing printing should be in the "interface" source code,
+// ie. main.go and interactiveApp.go (DONE: Added another print function for each)
+// (DONE: Confirm about printers)
+
 // Used to write metadata to vault
-func WriteUserInfo(token string, jsonName string) {
-	errOpening := false
-	client, _ := cs.Client(token)
+func WriteUserInfo(jsonName string) error {
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
-		errOpening = true
-		log.Println("File provided does not exist: ", err)
+		return fmt.Errorf("could not open file. %w", err)
 	}
 
 	byteValue, parseErr := ioutil.ReadAll(jsonFile)
 	if parseErr != nil {
-		errOpening = true
-		log.Println("Error parsing data: ", parseErr)
+		return fmt.Errorf("error parsing data: %w", parseErr)
 	}
 
 	var value map[string]interface{}
 	marshErr := json.Unmarshal([]byte(byteValue), &value)
 	if marshErr != nil {
-		errOpening = true
-		log.Println("Error using unmarshal: ", marshErr)
+		return fmt.Errorf("error using unmarshal: %w", marshErr)
 	}
-	if !errOpening {
-		_, err = client.Logical().Write("identity/entity", value)
-		if err != nil {
-			log.Fatalf("Unable to write secret: %v", err)
-		}
-		fmt.Println("Secret written successfully.")
+
+	_, err = cs.VaultClient.Logical().Write("identity/entity", value)
+	if err != nil {
+		return fmt.Errorf("unable to write secret: %w", err)
 	}
+
 	jsonFile.Close()
+	return nil
 }
 
 // Used to read metadata from Vault
-func ReadUserInfo(token string, name string) {
-	client, _ := cs.Client(token)
+func ReadUserInfo(name string) error {
 	endpoint := "identity/entity/name/" + name
-	secret, err := client.Logical().Read(endpoint)
+	secret, err := cs.VaultClient.Logical().Read(endpoint)
 	if err != nil {
-		log.Fatalf("Unable to read secret: %v", err)
+		return fmt.Errorf("unable to read secret: %w", err)
 	}
-	if secret != nil {
+	if secret != nil { // if doesn't exist
 		data, ok := secret.Data["metadata"].(map[string]interface{})
 		if !ok {
-			log.Fatalf("Data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
+			return fmt.Errorf("data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
 		}
-		jsonStr, err := json.Marshal(data)
+		_, err := json.Marshal(data)
 		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
+			return fmt.Errorf("error: %s", err.Error())
 		}
-		fmt.Println(string(jsonStr))
+		//	fmt.Println(string(jsonStr))
 	} else {
-		errMsg := name + " does not exist in Vault."
-		fmt.Println(errMsg)
+		err := name + " does not exist in Vault."
+		return fmt.Errorf(err)
 	}
+	return nil
 }
 
 // Used to list users + metadata in Vault
-func ListUserInfo(token string) {
-	client, _ := cs.Client(token)
-	listSecret, err := client.Logical().List("identity/entity/name")
+func ListUserInfo() error {
+	listSecret, err := cs.VaultClient.Logical().List("identity/entity/name")
 	if err != nil {
-		log.Fatalf("Unable to list secret: %v", err)
+		return fmt.Errorf("unable to list secret: %v", err)
 	}
-	if listSecret != nil {
-		datamap := listSecret.Data
-		data := datamap["keys"].([]interface{})
-		for _, n := range data {
-			nStr := fmt.Sprint(n)
-			fmt.Println(n)
-			ReadUserInfo(token, nStr)
-			fmt.Println("-------------------------") // just for legibility purposes
-		}
+	if listSecret == nil {
+		return fmt.Errorf("no users in vault")
 	}
+	return nil
 }
 
 // Used to read metadata from Vault
-func DeleteUserInfo(token string, name string) {
-	client, _ := cs.Client(token)
+func DeleteUserInfo(name string) error {
 	endpoint := "identity/entity/name/" + name
-	secret, err := client.Logical().Delete(endpoint)
+	secret, err := cs.VaultClient.Logical().Delete(endpoint)
 	if err != nil {
-		log.Fatalf("Unable to delete secret: %v", err)
+		return fmt.Errorf("unable to delete secret: %v", err)
 	}
-	if secret == nil {
-		fmt.Println("User sucessfully deleted from Vault.")
-	} else {
-		errMsg := name + " does not exist in Vault."
-		fmt.Println(errMsg)
+	if secret != nil {
+		err := name + " does not exist in Vault."
+		return fmt.Errorf(err)
 	}
+	return nil
 }

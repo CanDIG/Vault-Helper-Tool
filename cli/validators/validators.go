@@ -1,59 +1,47 @@
 package validators
 
 import (
-	"fmt"
+	"errors"
 )
 
+// TODO Make all validators return error (or nil if succesful)
+
 // Basic error handling for number of arguments (update call)
-func ValidateWrite(token string, arg1 string) bool {
-	if token != "" && arg1 != "" && len(arg1) > 5 && arg1[len(arg1)-5:] == ".json" {
-		return true
-	} else if token == "" && arg1 == "" {
-		fmt.Println("No arguments provided, missing token and json file name")
-		return false
-	} else if arg1 == "" {
-		fmt.Println("Only one argument provided")
-		return false
+// TODO arg1 == "" will never happen if the length of the input is checked in InteractiveApp (SOLVED: for cli)
+// TODO check how token validation differs between interactive and detached modes
+func ValidateWrite(arg1 string) error {
+	// if arg1 != "" && len(arg1) > 5 && arg1[len(arg1)-5:] == ".json" {
+	if arg1 == "" { // this case exclusively happens in the cli mode
+		return errors.New("file name not provided")
 	} else if len(arg1) <= 5 || arg1[len(arg1)-5:] != ".json" {
-		fmt.Println("File provided is not a json file")
-		return false
-	} else {
-		return false
+		return errors.New("file provided is not a json file")
 	}
+
+	return nil
 }
 
 // Basic error handling for number of arguments (read call)
-func ValidateRead(token string, arg1 string) bool {
-	if token != "" && arg1 != "" {
-		return true
-	} else if token == "" && arg1 == "" {
-		fmt.Println("No arguments provided, missing token and user's name")
-		return false
-	} else {
-		fmt.Println("Only one argument provided")
-		return false
+func ValidateRead(arg1 string) error {
+	if arg1 == "" {
+		return errors.New("no arguments provided, missing user's name")
 	}
+	return nil
 }
 
+/*
 // Basic error handling for number of arguments (list call)
-func ValidateList(token string) bool {
+// no error checking necessary
+func ValidateList(token string) error {
 	if token != "" {
-		return true
-	} else {
-		fmt.Println("No arguments provided, missing token")
-		return false
+		return errors.New("no arguments provided, missing token")
 	}
-}
+	return nil
+} */
 
 // Basic error handling for number of arguments (delelte call)
-func ValidateDelete(token string, arg1 string) bool {
-	if token != "" && arg1 != "" {
-		return true
-	} else if token == "" && arg1 == "" {
-		fmt.Println("No arguments provided, missing token and user's name")
-		return false
-	} else {
-		fmt.Println("Only one argument provided")
-		return false
+func ValidateDelete(arg1 string) error {
+	if arg1 == "" {
+		return errors.New("no arguments provided, missing user's name")
 	}
+	return nil
 }
