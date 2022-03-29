@@ -1,31 +1,31 @@
 package handlers
 
 import (
-	cs "cli/configSettings"
+	h "cli/handlers"
 	"encoding/json"
 	"fmt"
+
+	"github.com/hashicorp/vault/api"
 )
 
 func PrintOuputWrite() {
 	fmt.Println("Secret written successfully.")
 }
 
-func PrintOutputRead(name string) {
-	endpoint := "identity/entity/name/" + name
-	secret, _ := cs.VaultClient.Logical().Read(endpoint)
+func PrintOutputRead(secret *api.Secret) {
 	data, _ := secret.Data["metadata"].(map[string]interface{})
 	jsonStr, _ := json.Marshal(data)
 	fmt.Println(string(jsonStr))
 }
 
-func PrintOutputList() {
-	listSecret, _ := cs.VaultClient.Logical().List("identity/entity/name")
+func PrintOutputList(listSecret *api.Secret) {
 	datamap := listSecret.Data
 	data := datamap["keys"].([]interface{})
 	for _, n := range data {
 		nStr := fmt.Sprint(n)
 		fmt.Println(n)
-		PrintOutputRead(nStr)
+		user, _ := h.ReadUserInfo(nStr)
+		PrintOutputRead(user)
 		fmt.Println("-------------------------") // just for legibility purposes
 	}
 }

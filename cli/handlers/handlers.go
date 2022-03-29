@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/hashicorp/vault/api"
 )
 
 // TODO rewrite all error to resemble (DONE)
@@ -48,39 +50,39 @@ func WriteUserInfo(jsonName string) error {
 }
 
 // Used to read metadata from Vault
-func ReadUserInfo(name string) error {
+func ReadUserInfo(name string) (*api.Secret, error) {
 	endpoint := "identity/entity/name/" + name
 	secret, err := cs.VaultClient.Logical().Read(endpoint)
 	if err != nil {
-		return fmt.Errorf("unable to read secret: %w", err)
+		return nil, fmt.Errorf("unable to read secret: %w", err)
 	}
 	if secret != nil { // if doesn't exist
 		data, ok := secret.Data["metadata"].(map[string]interface{})
 		if !ok {
-			return fmt.Errorf("data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
+			return nil, fmt.Errorf("data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
 		}
 		_, err := json.Marshal(data)
 		if err != nil {
-			return fmt.Errorf("error: %s", err.Error())
+			return nil, fmt.Errorf("error: %s", err.Error())
 		}
 		//	fmt.Println(string(jsonStr))
 	} else {
 		err := name + " does not exist in Vault."
-		return fmt.Errorf(err)
+		return nil, fmt.Errorf(err)
 	}
-	return nil
+	return secret, nil
 }
 
 // Used to list users + metadata in Vault
-func ListUserInfo() error {
+func ListUserInfo() (*api.Secret, error) {
 	listSecret, err := cs.VaultClient.Logical().List("identity/entity/name")
 	if err != nil {
-		return fmt.Errorf("unable to list secret: %v", err)
+		return nil, fmt.Errorf("unable to list secret: %v", err)
 	}
 	if listSecret == nil {
-		return fmt.Errorf("no users in vault")
+		return nil, fmt.Errorf("no users in vault")
 	}
-	return nil
+	return listSecret, nil
 }
 
 // Used to read metadata from Vault

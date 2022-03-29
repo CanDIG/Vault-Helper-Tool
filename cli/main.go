@@ -51,11 +51,11 @@ func main() {
 					if err != nil {
 						fmt.Println(err)
 					}
-					errRead := h.ReadUserInfo(cArg0)
+					Secret, errRead := h.ReadUserInfo(cArg0)
 					if errRead != nil {
 						fmt.Println(errRead)
 					} else {
-						p.PrintOutputRead(cArg0)
+						p.PrintOutputRead(Secret)
 					}
 					return nil
 				},
@@ -69,11 +69,11 @@ func main() {
 						if err != nil {
 							fmt.Println(err)
 						} */
-					errList := h.ListUserInfo()
+					secretList, errList := h.ListUserInfo()
 					if errList != nil {
 						fmt.Println(errList)
 					} else {
-						p.PrintOutputList()
+						p.PrintOutputList(secretList)
 					}
 					return nil
 				},

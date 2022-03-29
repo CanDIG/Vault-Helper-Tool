@@ -46,22 +46,22 @@ func interactiveApp() {
 			if err != nil {
 				fmt.Println(err)
 			}
-			errRead := h.ReadUserInfo(newRes[1])
+			Secret, errRead := h.ReadUserInfo(newRes[1])
 			if errRead != nil {
 				fmt.Println(errRead)
 			} else {
-				p.PrintOutputRead(newRes[1])
+				p.PrintOutputRead(Secret)
 			}
 		} else if (command == "list" || command == "l") && len(newRes) >= 1 {
 			/*	err := v.ValidateList()
 				if err != nil {
 					fmt.Println(err)
 				} */
-			errList := h.ListUserInfo()
+			secretList, errList := h.ListUserInfo()
 			if errList != nil {
 				fmt.Println(errList)
 			} else {
-				p.PrintOutputList()
+				p.PrintOutputList(secretList)
 			}
 		} else if (command == "delete" || command == "d") && len(newRes) >= 2 {
 			err := v.ValidateDelete(newRes[1])
