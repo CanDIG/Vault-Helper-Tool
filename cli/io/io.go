@@ -1,5 +1,27 @@
-package handlers
+package io
 
+import (
+	v "cli/validators"
+	"fmt"
+)
+
+func Write(string user) {
+	err := v.ValidateWrite(user)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = h.WriteUserInfo(user)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Secret written successfully.")
+}
+
+// TODO add Read(), List(), Delete() below as Write() above
+
+/*
 import (
 	h "cli/handlers"
 	"encoding/json"
@@ -7,10 +29,6 @@ import (
 
 	"github.com/hashicorp/vault/api"
 )
-
-func PrintOuputWrite() {
-	fmt.Println("Secret written successfully.")
-}
 
 func PrintOutputRead(secret *api.Secret) {
 	data, _ := secret.Data["metadata"].(map[string]interface{})
@@ -33,3 +51,4 @@ func PrintOutputList(listSecret *api.Secret) {
 func PrintOuputDelete() {
 	fmt.Println("User deleted successfully.")
 }
+*/

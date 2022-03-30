@@ -1,4 +1,4 @@
-package configSettings
+package auth
 
 import (
 	"io/ioutil"
@@ -12,12 +12,15 @@ import (
 // in the case of interactive mode, that should be before any input is read (DONE)
 
 // returns obtained token
-func GetToken() string {
+func ReadToken() (string, error) {
 	absPath, _ := filepath.Abs("../cli/configSettings/token.txt")
-	token, _ := ioutil.ReadFile(absPath) // just pass the file name
+	token, err := ioutil.ReadFile(absPath) // just pass the file name
+	if err != nil {
+		return "", err
+	}
+
 	tokenStr := string(token)
 	finalToken := strings.TrimSuffix(tokenStr, "\n")
 
-	return finalToken
-
+	return finalToken, nil
 }

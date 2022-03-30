@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"cli/cli/io"
 	h "cli/handlers"
 	p "cli/printers"
 	v "cli/validators"
@@ -29,18 +30,9 @@ func interactiveApp() {
 		// TODO validation of the token is a generic step; shouldn't be in
 		// command-specific validators (DONE)
 
-		// TODO handle all commands like "w" block (refactor error handling) (DONE, confirm print)
+		// TODO handle all commands like "w" block (ie. call io.Read(), io.List(), io.Delete())
 		if (command == "write" || command == "w") && len(newRes) >= 2 {
-			err := v.ValidateWrite(newRes[1])
-			if err != nil {
-				fmt.Println(err)
-			}
-			errWrite := h.WriteUserInfo(newRes[1])
-			if errWrite != nil {
-				fmt.Println(errWrite)
-			} else {
-				p.PrintOuputWrite()
-			}
+			io.Write(newRes[1])
 		} else if (command == "read" || command == "r") && len(newRes) >= 2 {
 			err := v.ValidateRead(newRes[1])
 			if err != nil {

@@ -1,4 +1,4 @@
-package configSettings
+package cli
 
 import (
 	"github.com/hashicorp/vault/api"
@@ -14,11 +14,13 @@ func Client() (*api.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	errToken := ValidateToken()
-	if errToken != nil {
-		return nil, errToken
+
+	// TODO need to declare token somewhere
+	err := ValidateToken(token)
+	if err != nil {
+		return nil, err
 	}
-	client.SetToken(GetToken())
+	client.SetToken(token)
 	return client, nil
 }
 

@@ -1,4 +1,4 @@
-package configSettings
+package cli
 
 import (
 	"github.com/hashicorp/vault/api"

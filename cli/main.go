@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 
+	"cli/cli/io"
 	cs "cli/configSettings"
 	h "cli/handlers"
 	p "cli/printers"
@@ -23,21 +24,13 @@ func main() {
 		Usage: "Lets user read, update and list user information. Modify the secretFile.txt with the token necessary. If entering interactive mode, enter q or to quit",
 		Commands: []*cli.Command{
 			{
+				// TODO rewrite read, list, and delete to use io.Read() etc.
 				Name:    "write",
 				Aliases: []string{"w"},
 				Usage:   "update user information by overwriting (provide 1 argument - json file)",
 				Action: func(c *cli.Context) error {
-					cArg0 := c.Args().Get(0)
-					err := v.ValidateWrite(cArg0)
-					if err != nil {
-						fmt.Println(err)
-					}
-					errWrite := h.WriteUserInfo(cArg0)
-					if errWrite != nil {
-						fmt.Println(errWrite)
-					} else {
-						p.PrintOuputWrite()
-					}
+					user := c.Args().Get(0)
+					io.Write(user)
 					return nil
 				},
 			},
