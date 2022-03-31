@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"cli/cli/settings"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -13,14 +15,13 @@ import (
 
 // returns obtained token
 func ReadToken() (string, error) {
-	absPath, _ := filepath.Abs("../cli/configSettings/token.txt")
+	absPath, _ := filepath.Abs(settings.TOKEN_PATH)
 	token, err := ioutil.ReadFile(absPath) // just pass the file name
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("reading token file errored. %w", err)
 	}
 
-	tokenStr := string(token)
-	finalToken := strings.TrimSuffix(tokenStr, "\n")
+	fmtToken := strings.TrimSuffix(string(token), "\n")
 
-	return finalToken, nil
+	return fmtToken, nil
 }

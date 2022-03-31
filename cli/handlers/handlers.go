@@ -1,7 +1,6 @@
-package commands
+package handlers
 
 import (
-	cs "cli/configSettings"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,8 +21,10 @@ if err != nil {
 // ie. main.go and interactiveApp.go (DONE: Added another print function for each)
 // (DONE: Confirm about printers)
 
+// TODO rename to remove UserInfo from func name
+
 // Used to write metadata to vault
-func WriteUserInfo(jsonName string) error {
+func HandleWrite(jsonName string, tx *api.Client) error {
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
 		return fmt.Errorf("could not open file. %w", err)
@@ -40,7 +41,7 @@ func WriteUserInfo(jsonName string) error {
 		return fmt.Errorf("error using unmarshal: %w", marshErr)
 	}
 
-	_, err = cs.VaultClient.Logical().Write("identity/entity", value)
+	_, err = tx.Logical().Write("identity/entity", value)
 	if err != nil {
 		return fmt.Errorf("unable to write secret: %w", err)
 	}
@@ -49,10 +50,9 @@ func WriteUserInfo(jsonName string) error {
 	return nil
 }
 
-// Used to read metadata from Vault
-func ReadUserInfo(name string) (*api.Secret, error) {
+func HandleRead(name string, tx *api.Client) (*api.Secret, error) {
 	endpoint := "identity/entity/name/" + name
-	secret, err := cs.VaultClient.Logical().Read(endpoint)
+	secret, err := tx.Logical().Read(endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read secret: %w", err)
 	}
@@ -73,8 +73,35 @@ func ReadUserInfo(name string) (*api.Secret, error) {
 	return secret, nil
 }
 
+func HandleList(tx *api.Client) (*api.Secret, error) {
+	listSecret, err := tx.Logical().List("identity/entity/name")
+	if err != nil {
+		return nil, fmt.Errorf("unable to list secret: %v", err)
+	}
+	if listSecret == nil {
+		return nil, fmt.Errorf("no users in vault")
+	}
+	return listSecret, nil
+}
+
+func HandleDelete(name string, tx *api.Client) error {
+	endpoint := "identity/entity/name/" + name
+	secret, err := tx.Logical().Delete(endpoint)
+	if err != nil {
+		return fmt.Errorf("unable to delete secret: %v", err)
+	}
+	if secret != nil {
+		err := name + " does not exist in Vault."
+		return fmt.Errorf(err)
+	}
+	return nil
+}
+
+/* rename to HandleCommand
+// Used to read metadata from Vault
+
 // Used to list users + metadata in Vault
-func ListUserInfo() (*api.Secret, error) {
+func HandleList() (*api.Secret, error) {
 	listSecret, err := cs.VaultClient.Logical().List("identity/entity/name")
 	if err != nil {
 		return nil, fmt.Errorf("unable to list secret: %v", err)
@@ -98,3 +125,4 @@ func DeleteUserInfo(name string) error {
 	}
 	return nil
 }
+*/

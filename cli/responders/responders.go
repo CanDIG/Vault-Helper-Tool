@@ -1,44 +1,53 @@
-package io
+package responders
 
 import (
 	h "cli/cli/handlers"
-	v "cli/cli/validators"
 	"encoding/json"
 	"fmt"
+
+	"github.com/hashicorp/vault/api"
 )
 
-func Write(jsonFile string) {
-	err := v.ValidateWrite(jsonFile)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	err = h.WriteUserInfo(jsonFile)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("Secret written successfully.")
+func RespondToWrite() (string, error) {
+	return "Secret written successfully.", nil
 }
 
-// TODO add Read(), List(), Delete() below as Write() above
-
-func Read(user string) {
-	err := v.ValidateRead(user)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	Secret, err := h.ReadUserInfo(user)
-	if err != nil {
-		fmt.Println(err)
-		return
-	} else {
-		data, _ := Secret.Data["metadata"].(map[string]interface{})
-		jsonStr, _ := json.Marshal(data)
-		fmt.Println(string(jsonStr))
-	}
+func RespondToRead(secret *api.Secret) (string, error) {
+	data, _ := secret.Data["metadata"].(map[string]interface{})
+	jsonStr, _ := json.Marshal(data)
+	return string(jsonStr), nil
 }
+
+func RespondToList(listSecret *api.Secret, tx *api.Client) (string, error) {
+	var userList string
+	datamap := listSecret.Data
+	data := datamap["keys"].([]interface{})
+	for _, n := range data {
+		nStr := fmt.Sprint(n)
+		// fmt.Println(n)
+		userSecret, err := h.HandleRead(nStr, tx)
+		if err != nil { // shouldn't really happen
+			return "", nil
+		}
+		user, _ := RespondToRead(userSecret)
+		userList += nStr
+		userList += "\n"
+		userList += user
+		userList += "\n"
+		userList += "-------------------------" // just for legibility purposes
+		userList += "\n"
+	}
+	return userList, nil
+}
+
+func RespondToDelete() (string, error) {
+	return ("User deleted successfully."), nil
+}
+
+// TODO reusing the printers code in the comment block at the bottom of the page,
+// add RespondToRead(), RespondToList(), RespondToDelete() below as ResponToWrite() above
+
+/* move functionality below into middleware and handlers packages
 
 func List() {
 	listSecret, errList := h.ListUserInfo()
@@ -70,8 +79,9 @@ func Delete(user string) {
 		fmt.Println("User deleted successfully.")
 	}
 }
+*/
 
-/*
+/* move functionality below into responders package
 import (
 	h "cli/handlers"
 	"encoding/json"

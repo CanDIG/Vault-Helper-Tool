@@ -6,27 +6,57 @@ import (
 	"os"
 	"sort"
 
-	"cli/cli/io"
+	"cli/cli/auth"
+	"cli/cli/backend"
+	"cli/cli/middleware"
 
+	"github.com/hashicorp/vault/api"
 	"github.com/urfave/cli/v2"
 )
 
-func main() {
-	if Err != nil {
-		fmt.Println(Err)
+func connect() (*api.Client, error) {
+	token, err := auth.ReadToken()
+	if err != nil {
+		return nil, fmt.Errorf("token-setting error: %w", err)
 	}
+	if err = auth.ValidateToken(token); err != nil {
+		return nil, fmt.Errorf("token-setting error: %w", err)
+	}
+
+	tx, err := backend.Client(token)
+	if err != nil {
+		return nil, fmt.Errorf("connection error: %w", err)
+	}
+
+	return tx, nil
+}
+
+func main() {
+	fmt.Println("Connecting to Vault using token in token.txt")
+	tx, err := connect()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	app := &cli.App{
 		Name:  "Vault Helper Tool CLI",
 		Usage: "Lets user read, update and list user information. Modify the secretFile.txt with the token necessary. If entering interactive mode, enter q or to quit",
 		Commands: []*cli.Command{
 			{
-				// TODO rewrite read, list, and delete to use io.Read() etc. (DONE)
+				// TODO rewrite read, list, and delete to resemble write
+				// ie. pass args to middleware, then handle error or print response
 				Name:    "write",
 				Aliases: []string{"w"},
 				Usage:   "update user information by overwriting (provide 1 argument - json file)",
 				Action: func(c *cli.Context) error {
 					jsonFile := c.Args().Get(0)
-					io.Write(jsonFile)
+
+					response, err := middleware.Write(jsonFile, tx)
+					if err != nil {
+						return fmt.Errorf("middleware errored: %w", err)
+					}
+
+					fmt.Println(response)
 					return nil
 				},
 			},
@@ -36,7 +66,12 @@ func main() {
 				Usage:   "read metadata for user (provide 1 argument - name of user)",
 				Action: func(c *cli.Context) error {
 					user := c.Args().Get(0)
-					io.Read(user)
+					response, err := middleware.Read(user, tx)
+					if err != nil {
+						return fmt.Errorf("middleware errored: %w", err)
+					}
+
+					fmt.Println(response)
 					return nil
 				},
 			},
@@ -45,11 +80,12 @@ func main() {
 				Aliases: []string{"l"},
 				Usage:   "list all users and their data (no arguments needed)",
 				Action: func(c *cli.Context) error {
-					/*	err := v.ValidateList(cs.TOKEN)
-						if err != nil {
-							fmt.Println(err)
-						} */
-					io.List()
+					response, err := middleware.List(tx)
+					if err != nil {
+						return fmt.Errorf("middleware errored: %w", err)
+					}
+
+					fmt.Println(response)
 					return nil
 				},
 			},
@@ -59,7 +95,12 @@ func main() {
 				Usage:   "delete user from vault (provide 1 argument - name of user)",
 				Action: func(c *cli.Context) error {
 					user := c.Args().Get(0)
-					io.Delete(user)
+					response, err := middleware.Delete(user, tx)
+					if err != nil {
+						return fmt.Errorf("middleware errored: %w", err)
+					}
+
+					fmt.Println(response)
 					return nil
 				},
 			},
@@ -68,12 +109,13 @@ func main() {
 
 	sort.Sort(cli.CommandsByName(app.Commands))
 
-	err := app.Run(os.Args)
+	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	// used to run interactive mode, call ./cli to run this
 	if len(os.Args) == 1 {
-		interactiveApp()
+		interactiveApp(tx)
 	}
 }
