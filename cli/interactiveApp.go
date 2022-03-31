@@ -3,9 +3,6 @@ package main
 import (
 	"bufio"
 	"cli/cli/io"
-	h "cli/handlers"
-	p "cli/printers"
-	v "cli/validators"
 	"fmt"
 	"log"
 	"os"
@@ -30,42 +27,15 @@ func interactiveApp() {
 		// TODO validation of the token is a generic step; shouldn't be in
 		// command-specific validators (DONE)
 
-		// TODO handle all commands like "w" block (ie. call io.Read(), io.List(), io.Delete())
+		// TODO handle all commands like "w" block (ie. call io.Read(), io.List(), io.Delete()) (DONE)
 		if (command == "write" || command == "w") && len(newRes) >= 2 {
 			io.Write(newRes[1])
 		} else if (command == "read" || command == "r") && len(newRes) >= 2 {
-			err := v.ValidateRead(newRes[1])
-			if err != nil {
-				fmt.Println(err)
-			}
-			Secret, errRead := h.ReadUserInfo(newRes[1])
-			if errRead != nil {
-				fmt.Println(errRead)
-			} else {
-				p.PrintOutputRead(Secret)
-			}
-		} else if (command == "list" || command == "l") && len(newRes) >= 1 {
-			/*	err := v.ValidateList()
-				if err != nil {
-					fmt.Println(err)
-				} */
-			secretList, errList := h.ListUserInfo()
-			if errList != nil {
-				fmt.Println(errList)
-			} else {
-				p.PrintOutputList(secretList)
-			}
+			io.Read(newRes[1])
+		} else if (command == "list" || command == "l") && len(newRes) == 1 {
+			io.List()
 		} else if (command == "delete" || command == "d") && len(newRes) >= 2 {
-			err := v.ValidateDelete(newRes[1])
-			if err != nil {
-				fmt.Println(err)
-			}
-			errDelete := h.DeleteUserInfo(newRes[1])
-			if errDelete != nil {
-				fmt.Println(errDelete)
-			} else {
-				p.PrintOuputDelete()
-			}
+			io.Delete(newRes[1])
 		} else if command == "exit" || command == "q" {
 			break
 		} else {

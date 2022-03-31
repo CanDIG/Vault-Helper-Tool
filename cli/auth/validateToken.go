@@ -12,7 +12,7 @@ Seq:
 2. In Client, ValidateToken then immediately after SetToken
 */
 // Does error handling
-func ValidateToken(string token) error {
+func ValidateToken(token string) error {
 	if token == "" || token == "\n" {
 		return errors.New("token is empty")
 	}
