@@ -9,20 +9,6 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-// TODO rewrite all error to resemble (DONE)
-/* 	jsonFile, err := os.Open(jsonName)
-if err != nil {
-	return fmt.Errorf("Could not open file. %w", err)
-}
-*/
-
-// TODO make sure that none of the handlers print output directly;
-// The only code doing printing should be in the "interface" source code,
-// ie. main.go and interactiveApp.go (DONE: Added another print function for each)
-// (DONE: Confirm about printers)
-
-// TODO rename to remove UserInfo from func name
-
 // Used to write metadata to vault
 func HandleWrite(jsonName string, tx *api.Client) error {
 	jsonFile, err := os.Open(jsonName)
@@ -65,7 +51,6 @@ func HandleRead(name string, tx *api.Client) (*api.Secret, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error: %s", err.Error())
 		}
-		//	fmt.Println(string(jsonStr))
 	} else {
 		err := name + " does not exist in Vault."
 		return nil, fmt.Errorf(err)
@@ -96,33 +81,3 @@ func HandleDelete(name string, tx *api.Client) error {
 	}
 	return nil
 }
-
-/* rename to HandleCommand
-// Used to read metadata from Vault
-
-// Used to list users + metadata in Vault
-func HandleList() (*api.Secret, error) {
-	listSecret, err := cs.VaultClient.Logical().List("identity/entity/name")
-	if err != nil {
-		return nil, fmt.Errorf("unable to list secret: %v", err)
-	}
-	if listSecret == nil {
-		return nil, fmt.Errorf("no users in vault")
-	}
-	return listSecret, nil
-}
-
-// Used to read metadata from Vault
-func DeleteUserInfo(name string) error {
-	endpoint := "identity/entity/name/" + name
-	secret, err := cs.VaultClient.Logical().Delete(endpoint)
-	if err != nil {
-		return fmt.Errorf("unable to delete secret: %v", err)
-	}
-	if secret != nil {
-		err := name + " does not exist in Vault."
-		return fmt.Errorf(err)
-	}
-	return nil
-}
-*/

@@ -24,9 +24,8 @@ func RespondToList(listSecret *api.Secret, tx *api.Client) (string, error) {
 	data := datamap["keys"].([]interface{})
 	for _, n := range data {
 		nStr := fmt.Sprint(n)
-		// fmt.Println(n)
 		userSecret, err := h.HandleRead(nStr, tx)
-		if err != nil { // shouldn't really happen
+		if err != nil {
 			return "", nil
 		}
 		user, _ := RespondToRead(userSecret)
@@ -43,72 +42,3 @@ func RespondToList(listSecret *api.Secret, tx *api.Client) (string, error) {
 func RespondToDelete() (string, error) {
 	return ("User deleted successfully."), nil
 }
-
-// TODO reusing the printers code in the comment block at the bottom of the page,
-// add RespondToRead(), RespondToList(), RespondToDelete() below as ResponToWrite() above
-
-/* move functionality below into middleware and handlers packages
-
-func List() {
-	listSecret, errList := h.ListUserInfo()
-	if errList != nil {
-		fmt.Println(errList)
-		return
-	} else {
-		datamap := listSecret.Data
-		data := datamap["keys"].([]interface{})
-		for _, n := range data {
-			nStr := fmt.Sprint(n)
-			fmt.Println(n)
-			user, _ := h.ReadUserInfo(nStr)
-			Read(user)
-			fmt.Println("-------------------------") // just for legibility purposes
-		}
-	}
-}
-
-func Delete(user string) {
-	err := v.ValidateDelete(user)
-	if err != nil {
-		fmt.Println(err)
-	}
-	errDelete := h.DeleteUserInfo(user)
-	if errDelete != nil {
-		fmt.Println(errDelete)
-	} else {
-		fmt.Println("User deleted successfully.")
-	}
-}
-*/
-
-/* move functionality below into responders package
-import (
-	h "cli/handlers"
-	"encoding/json"
-	"fmt"
-
-	"github.com/hashicorp/vault/api"
-)
-
-func PrintOutputRead(secret *api.Secret) {
-	data, _ := secret.Data["metadata"].(map[string]interface{})
-	jsonStr, _ := json.Marshal(data)
-	fmt.Println(string(jsonStr))
-}
-
-func PrintOutputList(listSecret *api.Secret) {
-	datamap := listSecret.Data
-	data := datamap["keys"].([]interface{})
-	for _, n := range data {
-		nStr := fmt.Sprint(n)
-		fmt.Println(n)
-		user, _ := h.ReadUserInfo(nStr)
-		PrintOutputRead(user)
-		fmt.Println("-------------------------") // just for legibility purposes
-	}
-}
-
-func PrintOuputDelete() {
-	fmt.Println("User deleted successfully.")
-}
-*/

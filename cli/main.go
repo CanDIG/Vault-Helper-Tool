@@ -43,8 +43,6 @@ func main() {
 		Usage: "Lets user read, update and list user information. Modify the secretFile.txt with the token necessary. If entering interactive mode, enter q or to quit",
 		Commands: []*cli.Command{
 			{
-				// TODO rewrite read, list, and delete to resemble write
-				// ie. pass args to middleware, then handle error or print response
 				Name:    "write",
 				Aliases: []string{"w"},
 				Usage:   "update user information by overwriting (provide 1 argument - json file)",

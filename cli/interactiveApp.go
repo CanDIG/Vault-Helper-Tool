@@ -11,9 +11,6 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-// TODO Rewrite this function to act ONLY as an interface; no other logic.
-// This function allows for increased functionality of the Vault helper tool
-// Reads one line of user input at a time (DONE, but has errCommand to print out)
 func interactiveApp(tx *api.Client) {
 	inputPrompt := "# Enter command or enter q to quit: "
 	scanner := bufio.NewScanner(os.Stdin)
@@ -28,8 +25,6 @@ func interactiveApp(tx *api.Client) {
 		input := strings.Split(scanner.Text(), " ")
 		command := input[0]
 		args := input[1:]
-
-		// TODO handle all commands like "w" block
 
 		// Parse and fulfill command
 		// TODO Technical Debt to consider during future refactors:

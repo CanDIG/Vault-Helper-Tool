@@ -10,3 +10,4 @@
 - Some code reused between interactive mode and cli. Explore if ur fave cli has a similar interface that can be easily integrated
 - Try this tool with non-root token (and correct permissions)
 - Fix the docker compose file so both Vault and Keycloak are generated automatically
+- number-of-arguments validator should be shared between interactiveApp (interactive mode) and main (single-command mode) and refactor should modify the len(args)==n conditions below.
