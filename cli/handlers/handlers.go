@@ -1,101 +1,83 @@
 package handlers
 
 import (
-	cs "cli/configSettings"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
+
+	"github.com/hashicorp/vault/api"
 )
 
 // Used to write metadata to vault
-func WriteUserInfo(token string, jsonName string) {
-	errOpening := false
-	client, _ := cs.Client(token)
+func HandleWrite(jsonName string, tx *api.Client) error {
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
-		errOpening = true
-		log.Println("File provided does not exist: ", err)
+		return fmt.Errorf("could not open file. %w", err)
 	}
 
 	byteValue, parseErr := ioutil.ReadAll(jsonFile)
 	if parseErr != nil {
-		errOpening = true
-		log.Println("Error parsing data: ", parseErr)
+		return fmt.Errorf("error parsing data: %w", parseErr)
 	}
 
 	var value map[string]interface{}
 	marshErr := json.Unmarshal([]byte(byteValue), &value)
 	if marshErr != nil {
-		errOpening = true
-		log.Println("Error using unmarshal: ", marshErr)
+		return fmt.Errorf("error using unmarshal: %w", marshErr)
 	}
-	if !errOpening {
-		_, err = client.Logical().Write("identity/entity", value)
-		if err != nil {
-			log.Fatalf("Unable to write secret: %v", err)
-		}
-		fmt.Println("Secret written successfully.")
+
+	_, err = tx.Logical().Write("identity/entity", value)
+	if err != nil {
+		return fmt.Errorf("unable to write secret: %w", err)
 	}
+
 	jsonFile.Close()
+	return nil
 }
 
-// Used to read metadata from Vault
-func ReadUserInfo(token string, name string) {
-	client, _ := cs.Client(token)
+func HandleRead(name string, tx *api.Client) (*api.Secret, error) {
 	endpoint := "identity/entity/name/" + name
-	secret, err := client.Logical().Read(endpoint)
+	secret, err := tx.Logical().Read(endpoint)
 	if err != nil {
-		log.Fatalf("Unable to read secret: %v", err)
+		return nil, fmt.Errorf("unable to read secret: %w", err)
 	}
-	if secret != nil {
+	if secret != nil { // if doesn't exist
 		data, ok := secret.Data["metadata"].(map[string]interface{})
 		if !ok {
-			log.Fatalf("Data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
+			return nil, fmt.Errorf("data type assertion failed: %T %#v", secret.Data["metadata"], secret.Data["metadata"])
 		}
-		jsonStr, err := json.Marshal(data)
+		_, err := json.Marshal(data)
 		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
+			return nil, fmt.Errorf("error: %s", err.Error())
 		}
-		fmt.Println(string(jsonStr))
 	} else {
-		errMsg := name + " does not exist in Vault."
-		fmt.Println(errMsg)
+		err := name + " does not exist in Vault."
+		return nil, fmt.Errorf(err)
 	}
+	return secret, nil
 }
 
-// Used to list users + metadata in Vault
-func ListUserInfo(token string) {
-	client, _ := cs.Client(token)
-	listSecret, err := client.Logical().List("identity/entity/name")
+func HandleList(tx *api.Client) (*api.Secret, error) {
+	listSecret, err := tx.Logical().List("identity/entity/name")
 	if err != nil {
-		log.Fatalf("Unable to list secret: %v", err)
+		return nil, fmt.Errorf("unable to list secret: %v", err)
 	}
-	if listSecret != nil {
-		datamap := listSecret.Data
-		data := datamap["keys"].([]interface{})
-		for _, n := range data {
-			nStr := fmt.Sprint(n)
-			fmt.Println(n)
-			ReadUserInfo(token, nStr)
-			fmt.Println("-------------------------") // just for legibility purposes
-		}
+	if listSecret == nil {
+		return nil, fmt.Errorf("no users in vault")
 	}
+	return listSecret, nil
 }
 
-// Used to read metadata from Vault
-func DeleteUserInfo(token string, name string) {
-	client, _ := cs.Client(token)
+func HandleDelete(name string, tx *api.Client) error {
 	endpoint := "identity/entity/name/" + name
-	secret, err := client.Logical().Delete(endpoint)
+	secret, err := tx.Logical().Delete(endpoint)
 	if err != nil {
-		log.Fatalf("Unable to delete secret: %v", err)
+		return fmt.Errorf("unable to delete secret: %v", err)
 	}
-	if secret == nil {
-		fmt.Println("User sucessfully deleted from Vault.")
-	} else {
-		errMsg := name + " does not exist in Vault."
-		fmt.Println(errMsg)
+	if secret != nil {
+		err := name + " does not exist in Vault."
+		return fmt.Errorf(err)
 	}
+	return nil
 }

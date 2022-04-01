@@ -1,21 +1,23 @@
-package configSettings
+package backend
 
 import (
-	"log"
+	"cli/cli/settings"
+	"fmt"
 
 	"github.com/hashicorp/vault/api"
 )
 
 // Connects to Vault server
 func Client(token string) (*api.Client, error) {
-	config := DEFAULT_CONFIG
+	config := api.DefaultConfig()
 
-	config.Address = VAULT_ADDRESS
+	config.Address = settings.VAULT_ADDRESS
 
 	client, err := api.NewClient(config)
 	if err != nil {
-		log.Fatalf("unable to initialize Vault client: %v", err)
+		return nil, fmt.Errorf("new Vault client creation errored: %w", err)
 	}
+
 	client.SetToken(token)
 	return client, nil
 }
