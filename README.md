@@ -11,7 +11,7 @@ Then, run `go build` in the cli folder to build the CLI.
 
 Run the script `./cli` to set up a Vault dev server and run the code.
 
-Note, there are 3 commands implemented:
+Note, there are 5 commands implemented:
 
 - `write`: Can use this command as 
 ```
@@ -77,11 +77,11 @@ $ ./cli help
 ```
 ## Verify that Data in Vault
 
-Use the following vault commmand to list out the users in vault:
+Use the following vault command to list out the users in vault:
 ```
 $ vault list identity/entity/name
 ```
-And the following command to read all the information associated with a particual user:
+And the following command to read all the information associated with a particular user:
 ```
 $ vault read identity/entity/name/{user-name}
 ```

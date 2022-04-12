@@ -1,4 +1,17 @@
 package settings
 
-var VAULT_ADDRESS = "http://127.0.0.1:8200"
-var TOKEN_PATH = "../token.txt"
+import (
+	"os"
+)
+
+var VAULT_ADDRESS = os.Getenv("VAULT_SERVICE_PUBLIC_URL")
+
+//var VAULT_ADDRESS = "http://127.0.0.1:8200"
+var KEYCLOAK_ACCESS_TOKEN_URL = os.Getenv("KEYCLOAK_ACCESS_TOKEN_URL")
+
+//var TOKEN_PATH = "../token.txt"
+
+var TOKEN_PATH = os.Getenv("TOKEN_PATH")
+var KEYCLOAK_CLIENT_SECRET = os.Getenv("KEYCLOAK_CLIENT_SECRET")
+var KEYCLOAK_TEST_USERNAME = os.Getenv("KEYCLOAK_TEST_USERNAME")
+var KEYCLOAK_TEST_PASSWORD = os.Getenv("KEYCLOAK_TEST_PASSWORD")

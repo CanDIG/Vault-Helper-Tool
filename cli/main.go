@@ -15,11 +15,11 @@ import (
 )
 
 func connect() (*api.Client, error) {
-	token, err := auth.ReadToken()
-	if err != nil {
+	if err := auth.ValidateBearerToken(); err != nil {
 		return nil, fmt.Errorf("token-setting error: %w", err)
 	}
-	if err = auth.ValidateToken(token); err != nil {
+	token, err := auth.GetBearerToken()
+	if err != nil {
 		return nil, fmt.Errorf("token-setting error: %w", err)
 	}
 
@@ -29,6 +29,19 @@ func connect() (*api.Client, error) {
 	}
 
 	return tx, nil
+}
+
+func resetToken(tx *api.Client) (string, error) {
+	token, err := auth.ReadToken()
+	if err != nil {
+		return "", fmt.Errorf("token-setting error: %w", err)
+	}
+	if err = auth.ValidateToken(token); err != nil {
+		return "", fmt.Errorf("token-setting error: %w", err)
+	}
+	tx.SetToken(token)
+
+	return "Token reset successfully", nil
 }
 
 func main() {
@@ -98,6 +111,19 @@ func main() {
 						return fmt.Errorf("middleware errored: %w", err)
 					}
 
+					fmt.Println(response)
+					return nil
+				},
+			},
+			{
+				Name:    "set-token",
+				Aliases: []string{"st"},
+				Usage:   "sets user token with contents of the token.txt file",
+				Action: func(c *cli.Context) error {
+					response, err := resetToken(tx)
+					if err != nil {
+						return fmt.Errorf("reset token errored: %w", err)
+					}
 					fmt.Println(response)
 					return nil
 				},
