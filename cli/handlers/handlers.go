@@ -87,43 +87,30 @@ func HandleDelete(name string, tx *api.Client) error {
 }
 
 func HandleUpdateRole(jsonName string, roleName string, tx *api.Client) error {
-
 	jsonFile, err := os.Open(jsonName)
-
 	if err != nil {
-
 		return fmt.Errorf("could not open file. %w", err)
-
 	}
-
 	byteValue, parseErr := ioutil.ReadAll(jsonFile)
-
 	if parseErr != nil {
 
 		return fmt.Errorf("error parsing data: %w", parseErr)
 
 	}
-
 	var value map[string]interface{}
-
 	marshErr := json.Unmarshal([]byte(byteValue), &value)
-
 	if marshErr != nil {
 
 		return fmt.Errorf("error using unmarshal: %w", marshErr)
 
 	}
-
 	_, err = tx.Logical().Write("auth/jwt/role/"+roleName, value)
-
 	if err != nil {
 
 		return fmt.Errorf("unable to write secret: %w", err)
 
 	}
-
 	jsonFile.Close()
-
 	return nil
 
 }
