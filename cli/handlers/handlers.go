@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-// Used to write metadata to vault
 func HandleWrite(jsonName string, tx *api.Client) error {
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
@@ -71,6 +70,11 @@ func HandleList(tx *api.Client) (*api.Secret, error) {
 
 func HandleDelete(name string, tx *api.Client) error {
 	endpoint := "identity/entity/name/" + name
+	_, err := HandleRead(name, tx)
+	if err != nil {
+		err := name + " does not exist in Vault."
+		return fmt.Errorf(err)
+	}
 	secret, err := tx.Logical().Delete(endpoint)
 	if err != nil {
 		return fmt.Errorf("unable to delete secret: %v", err)
