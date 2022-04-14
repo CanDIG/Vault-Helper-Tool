@@ -79,3 +79,22 @@ func Delete(user string, tx *api.Client) (string, error) {
 
 	return response, nil
 }
+
+func UpdateRole(jsonFilename string, roleName string, tx *api.Client) (string, error) {
+	err := v.ValidateUpdateRole(jsonFilename, roleName)
+	if err != nil {
+		return "", fmt.Errorf("validation failed: %w", err)
+	}
+
+	err = h.HandleUpdateRole(jsonFilename, roleName, tx)
+	if err != nil {
+		return "", fmt.Errorf("handling failed: %w", err)
+	}
+
+	response, err := r.RespondToUpdateRole()
+	if err != nil {
+		return "", fmt.Errorf("response-generation failed: %w", err)
+	}
+
+	return response, nil
+}

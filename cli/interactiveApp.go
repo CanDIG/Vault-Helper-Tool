@@ -39,6 +39,8 @@ func interactiveApp(tx *api.Client) {
 			response, err = middleware.List(tx)
 		} else if (command == "delete" || command == "d") && len(args) == 1 {
 			response, err = middleware.Delete(args[0], tx)
+		} else if (command == "updateRole" || command == "ur") && len(args) == 2 {
+			response, err = middleware.UpdateRole(args[0], args[1], tx)
 		} else if command == "exit" || command == "q" {
 			break
 		} else {

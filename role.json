@@ -1,0 +1,7 @@
+{
+    "user_claim": "preferred_username",
+    "role_type": "jwt",
+    "policies": "tyk",
+    "ttl": "1h",
+    "bound_audiences": "candig"
+}

@@ -102,6 +102,22 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "updateRole",
+				Aliases: []string{"ur"},
+				Usage:   "update role in vault (provide 2 argument - filename, name of role)",
+				Action: func(c *cli.Context) error {
+					jsonFile := c.Args().Get(0)
+					role := c.Args().Get(1)
+					response, err := middleware.UpdateRole(jsonFile, role, tx)
+					if err != nil {
+						return fmt.Errorf("middleware errored: %w", err)
+					}
+
+					fmt.Println(response)
+					return nil
+				},
+			},
 		},
 	}
 
