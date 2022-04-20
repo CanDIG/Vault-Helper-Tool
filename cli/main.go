@@ -31,10 +31,28 @@ func connect() (*api.Client, error) {
 	return tx, nil
 }
 
+func printToLogFile(errorOutput error) {
+	file, err := os.OpenFile("commands.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println("Could not open commands.txt")
+		return
+	}
+
+	defer file.Close()
+
+	_, err2 := file.WriteString(errorOutput.Error() + "\n")
+
+	if err2 != nil {
+		fmt.Println("Could not write text to commands.txt")
+
+	}
+}
+
 func main() {
 	fmt.Println("Connecting to Vault using token in token.txt")
 	tx, err := connect()
 	if err != nil {
+		printToLogFile(err)
 		log.Fatal(err)
 	}
 
@@ -125,6 +143,7 @@ func main() {
 
 	err = app.Run(os.Args)
 	if err != nil {
+		printToLogFile(err)
 		log.Fatal(err)
 	}
 

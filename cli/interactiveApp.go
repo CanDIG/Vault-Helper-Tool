@@ -49,6 +49,7 @@ func interactiveApp(tx *api.Client) {
 
 		// Respond to user
 		if err != nil {
+			printToLogFile(err)
 			fmt.Println(fmt.Errorf("middleware errored: %w", err))
 			continue
 		}
@@ -56,6 +57,7 @@ func interactiveApp(tx *api.Client) {
 		fmt.Print(inputPrompt)
 	}
 	if err := scanner.Err(); err != nil {
+		printToLogFile(err)
 		log.Println(err)
 	}
 }
