@@ -32,9 +32,9 @@ func connect() (*api.Client, error) {
 }
 
 func printToLogFile(errorOutput error) {
-	file, err := os.OpenFile("commands.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile("VHT-logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println("Could not open commands.txt")
+		fmt.Println("Could not open VHT-logs.txt")
 		return
 	}
 
@@ -43,7 +43,7 @@ func printToLogFile(errorOutput error) {
 	_, err2 := file.WriteString(errorOutput.Error() + "\n")
 
 	if err2 != nil {
-		fmt.Println("Could not write text to commands.txt")
+		fmt.Println("Could not write text to VHT-logs.txt")
 
 	}
 }
