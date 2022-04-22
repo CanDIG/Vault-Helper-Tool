@@ -42,3 +42,7 @@ func RespondToList(listSecret *api.Secret, tx *api.Client) (string, error) {
 func RespondToDelete() (string, error) {
 	return ("User deleted successfully."), nil
 }
+
+func RespondToUpdateRole() (string, error) {
+	return "Role updated successfully.", nil
+}

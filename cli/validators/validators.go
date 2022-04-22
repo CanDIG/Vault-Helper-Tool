@@ -40,3 +40,13 @@ func ValidateDelete(arg1 string) error {
 	}
 	return nil
 }
+
+func ValidateUpdateRole(arg1 string, arg2 string) error {
+	if arg1 == "" {
+		return errors.New("no arguments provided, missing filename")
+	}
+	if arg2 == "" {
+		return errors.New("no arguments provided, missing role's name")
+	}
+	return nil
+}

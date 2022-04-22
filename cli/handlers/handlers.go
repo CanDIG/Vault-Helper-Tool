@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-// Used to write metadata to vault
 func HandleWrite(jsonName string, tx *api.Client) error {
 	jsonFile, err := os.Open(jsonName)
 	if err != nil {
@@ -71,6 +70,11 @@ func HandleList(tx *api.Client) (*api.Secret, error) {
 
 func HandleDelete(name string, tx *api.Client) error {
 	endpoint := "identity/entity/name/" + name
+	_, err := HandleRead(name, tx)
+	if err != nil {
+		err := name + " does not exist in Vault."
+		return fmt.Errorf(err)
+	}
 	secret, err := tx.Logical().Delete(endpoint)
 	if err != nil {
 		return fmt.Errorf("unable to delete secret: %v", err)
@@ -80,4 +84,33 @@ func HandleDelete(name string, tx *api.Client) error {
 		return fmt.Errorf(err)
 	}
 	return nil
+}
+
+func HandleUpdateRole(jsonName string, roleName string, tx *api.Client) error {
+	jsonFile, err := os.Open(jsonName)
+	if err != nil {
+		return fmt.Errorf("could not open file. %w", err)
+	}
+	byteValue, parseErr := ioutil.ReadAll(jsonFile)
+	if parseErr != nil {
+
+		return fmt.Errorf("error parsing data: %w", parseErr)
+
+	}
+	var value map[string]interface{}
+	marshErr := json.Unmarshal([]byte(byteValue), &value)
+	if marshErr != nil {
+
+		return fmt.Errorf("error using unmarshal: %w", marshErr)
+
+	}
+	_, err = tx.Logical().Write("auth/jwt/role/"+roleName, value)
+	if err != nil {
+
+		return fmt.Errorf("unable to write secret: %w", err)
+
+	}
+	jsonFile.Close()
+	return nil
+
 }

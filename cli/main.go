@@ -31,10 +31,28 @@ func connect() (*api.Client, error) {
 	return tx, nil
 }
 
+func printToLogFile(errorOutput error) {
+	file, err := os.OpenFile("VHT-logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println("Could not open VHT-logs.txt")
+		return
+	}
+
+	defer file.Close()
+
+	_, err2 := file.WriteString(errorOutput.Error() + "\n")
+
+	if err2 != nil {
+		fmt.Println("Could not write text to VHT-logs.txt")
+
+	}
+}
+
 func main() {
 	fmt.Println("Connecting to Vault using token in token.txt")
 	tx, err := connect()
 	if err != nil {
+		printToLogFile(err)
 		log.Fatal(err)
 	}
 
@@ -102,6 +120,22 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "updateRole",
+				Aliases: []string{"ur"},
+				Usage:   "update role in vault (provide 2 argument - filename, name of role)",
+				Action: func(c *cli.Context) error {
+					jsonFile := c.Args().Get(0)
+					role := c.Args().Get(1)
+					response, err := middleware.UpdateRole(jsonFile, role, tx)
+					if err != nil {
+						return fmt.Errorf("middleware errored: %w", err)
+					}
+
+					fmt.Println(response)
+					return nil
+				},
+			},
 		},
 	}
 
@@ -109,6 +143,7 @@ func main() {
 
 	err = app.Run(os.Args)
 	if err != nil {
+		printToLogFile(err)
 		log.Fatal(err)
 	}
 

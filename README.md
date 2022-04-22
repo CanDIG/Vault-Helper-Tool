@@ -8,46 +8,7 @@ In order to get started, follow the steps outlined in the [Deployment document](
 Then, run `go build` in the cli folder to build the CLI.
 
 ## How To Use the CLI
-
-Run the script `./cli` to set up a Vault dev server and run the code.
-
-Note, there are 3 commands implemented:
-
-- `write`: Can use this command as 
-```
-./cli write {json file}
-```
-or after running the cli as 
-```
-write {json file}
-```
-- `read`: Can use this command as 
-```
-./cli read {user's name}
-```
-or after running the cli as 
-```
-read {user's name}
-```
-- `list`: Can use this command as 
-```
-./cli list
-``` 
-or after running the cli as 
-```
-list 
-```
-- `help`: Can use this command as `./cli` or `./cli -h` or `./cli help`. This command will show information about the CLI.
-
-- `delete`: Can use the command as
-```
-./cli delete {user's name}
-```
-or after running the cli as
-```
-delete {user's name}
-```
-
+Navigate to the root of the Candigv2 Repository.
 There are two ways to access the CLI:
 - By running it in interactive mode (note the aliases can be used instead of the full command), for example: 
 ```
@@ -75,9 +36,10 @@ $ ./cli l
 $ ./cli d user
 $ ./cli help
 ```
+Further information can be found in [`Test-VHT.md`](/docs/Test-VHT.md)
 ## Verify that Data in Vault
 
-Use the following vault commmand to list out the users in vault:
+Use the following vault command to list out the users in vault:
 ```
 $ vault list identity/entity/name
 ```
@@ -123,3 +85,6 @@ curl -H "X-Vault-Token: "insert-client-token-here" http://docker.localhost:8200/
 ```
 This should generate the JWT, and go to [JWT.io](https://jwt.io/) to verify if it is correct.
 
+## Technical Debt
+
+Technical debt is documented in [`Further-Notes.md`](docs/Further-Notes.md)
